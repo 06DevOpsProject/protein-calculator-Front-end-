@@ -11,14 +11,11 @@ first backend URL open panni wait pannunga )
 
 ⚠️ Important Note (Backend – Render Free Plan):
 
-The backend used by this frontend is hosted on Render Free Plan.
+If the backend remains idle, it may automatically go into sleep mode.
 
-Backend idle-aa irundha automatically sleep aagum
+When the frontend is opened, the backend may take 30–60 seconds to wake up.
 
-Frontend open pannina udane backend wake aaga 30–60 seconds aagum
-
-So frontend use panna munnaadi backend URL oru vaatti open pannunga
-
+Therefore, please open the backend URL once before using the frontend
 Backend URL:
 👉 https://protein-calculator-back-end.onrender.com/api/protein
 
