@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/api/protein";
+const BASE_URL = "https://protein-calculator-back-end.onrender.com/api/protein";
 
 class ProteinService {
 
