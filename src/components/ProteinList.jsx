@@ -4,6 +4,7 @@ import ProteinService from "../services/ProteinService";
 function ProteinList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ function ProteinList() {
 
   const fetchUsers = () => {
     setLoading(true);
+    setError("");
     ProteinService.getAll()
       .then((response) => {
         setUsers(response.data);
@@ -27,6 +29,9 @@ function ProteinList() {
       })
       .catch((err) => {
         console.log("Error fetching users:", err);
+        setError(
+          "Unable to load users. Please check that the backend service is running and reachable."
+        );
         setLoading(false);
       });
   };
@@ -76,7 +81,14 @@ function ProteinList() {
           setShowForm(false);
           fetchUsers();
         })
-        .catch((err) => console.log("Error updating user:", err));
+        .catch((err) => {
+          console.log("Error updating user:", err);
+          setError(
+            err?.response?.data?.message ||
+              "Failed to update user. Please try again later."
+          );
+          alert("Failed to update user");
+        });
     } else {
       // Create user
       ProteinService.create(formData)
@@ -85,7 +97,14 @@ function ProteinList() {
           setShowForm(false);
           fetchUsers();
         })
-        .catch((err) => console.log("Error creating user:", err));
+        .catch((err) => {
+          console.log("Error creating user:", err);
+          setError(
+            err?.response?.data?.message ||
+              "Failed to create user. Please check your input or try again later."
+          );
+          alert("Failed to create user");
+        });
     }
   };
 
@@ -101,13 +120,26 @@ function ProteinList() {
           alert("User deleted successfully");
           fetchUsers();
         })
-        .catch((err) => console.log("Error deleting user:", err));
+        .catch((err) => {
+          console.log("Error deleting user:", err);
+          setError(
+            err?.response?.data?.message ||
+              "Failed to delete user. Please try again later."
+          );
+          alert("Failed to delete user");
+        });
     }
   };
 
   return (
     <div className="container mt-5">
       <h2>Protein Calculator</h2>
+
+      {error && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
 
       {/* Add/Edit Form */}
       {showForm && (
