@@ -1,8 +1,7 @@
 
 // ✅ Backend API URL (Render – production)
 // 🔥 IMPORTANT: correct hyphen -> back-end
-const API_URL =
-  "https://protein-calculator-back-end.onrender.com/api/protein";
+const API_URL = "https://protein-calculator-back-end.onrender.com/api/protein";
 
 // Initialize app
 document.addEventListener("DOMContentLoaded", () => {

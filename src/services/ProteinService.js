@@ -1,6 +1,13 @@
 import axios from "axios";
 
-const BASE_URL = "https://protein-calculator-back-end.onrender.com/api/protein";
+// Base URL for the backend API
+// - In production (Vercel), you can override this with REACT_APP_API_BASE_URL
+// - By default, it points to the Render backend URL
+const API_BASE_URL =
+  process.env.REACT_APP_API_BASE_URL ||
+  "https://protein-calculator-back-end.onrender.com";
+
+const BASE_URL = `${API_BASE_URL}/api/protein`;
 
 class ProteinService {
 

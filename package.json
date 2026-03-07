@@ -5,6 +5,7 @@
   "engines": {
     "node": "24.x"
   },
+  "proxy": "https://protein-calculator-back-end.onrender.com",
   "dependencies": {
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
