@@ -1,7 +1,7 @@
 
 // ✅ Backend API URL (Render – production)
 // 🔥 IMPORTANT: correct hyphen -> back-end
-const API_URL = "https://protein-calculator-back-end.onrender.com/api/protein";
+const BASE_URL = "https://protein-calculator-back-end.onrender.com/api/protein";
 
 // Initialize app
 document.addEventListener("DOMContentLoaded", () => {
@@ -33,6 +33,7 @@ async function loadUsers() {
     displayUsers(users);
   } catch (error) {
     console.error("Error loading users:", error);
+    showErrorAlert("Error loading users", error);
     usersList.innerHTML = `
       <div class="loading" style="color:red;">
         ❌ Backend not reachable. Check Render service.
@@ -115,6 +116,7 @@ async function handleAddUser(e) {
     showNotification("✅ User added successfully!");
   } catch (error) {
     console.error("Error adding user:", error);
+    showErrorAlert("Error adding user", error);
     showNotification("❌ Failed to add user");
   }
 }
@@ -135,6 +137,7 @@ async function openEditModal(id) {
     document.getElementById("editModal").style.display = "block";
   } catch (error) {
     console.error("Error loading user:", error);
+    showErrorAlert("Error loading user details", error);
     showNotification("❌ Failed to load user details");
   }
 }
@@ -165,6 +168,7 @@ async function handleEditUser(e) {
     showNotification("✅ User updated successfully!");
   } catch (error) {
     console.error("Error updating user:", error);
+    showErrorAlert("Error updating user", error);
     showNotification("❌ Failed to update user");
   }
 }
@@ -178,6 +182,12 @@ function closeModal() {
 function capitalizeGoal(goal) {
   if (!goal) return "";
   return goal.charAt(0).toUpperCase() + goal.slice(1);
+}
+
+// Centralized error alert helper
+function showErrorAlert(context, error) {
+  const message = `${context}: ${error && error.message ? error.message : error}`;
+  alert(message);
 }
 
 function showNotification(message) {
@@ -195,3 +205,13 @@ function showNotification(message) {
     toast.classList.remove("show");
   }, 3000);
 }
+
+// Global error handlers for unexpected frontend errors
+window.addEventListener("error", (event) => {
+  alert(`Frontend error: ${event.message}`);
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+  const reason = event.reason && event.reason.message ? event.reason.message : event.reason;
+  alert(`Frontend async error: ${reason}`);
+});

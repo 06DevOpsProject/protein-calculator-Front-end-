@@ -1,35 +1,32 @@
 import axios from "axios";
 
-// Resolve backend base URL in a way that works both
-// locally and on hosted environments (Vercel + Render).
-// - Default: Render backend URL
-// - Env override: REACT_APP_API_BASE_URL
-// - Safety: if env points to localhost but the app is running
-//   on a non-localhost domain (e.g. Vercel), fall back to Render.
 function resolveApiBaseUrl() {
-  const defaultUrl = "https://protein-calculator-back-end.onrender.com";
+  const renderUrl = "https://protein-calculator-back-end.onrender.com";
+  const localUrl = "http://localhost:8080";
   const envUrl = process.env.REACT_APP_API_BASE_URL;
 
-  if (!envUrl) {
-    return defaultUrl;
+  // Highest priority: explicit env override
+  if (envUrl) {
+    return envUrl;
   }
 
+  // If running in a browser, choose URL based on host
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
     const isLocalHost =
       host === "localhost" || host === "127.0.0.1" || host === "::1";
-    const envIsLocal =
-      envUrl.includes("localhost") ||
-      envUrl.includes("127.0.0.1") ||
-      envUrl.includes("::1");
 
-    // Prevent using a localhost backend from a deployed frontend
-    if (envIsLocal && !isLocalHost) {
-      return defaultUrl;
+    // Local React dev → talk to local Spring Boot on 8080
+    if (isLocalHost) {
+      return localUrl;
     }
+
+    // Deployed frontend (e.g. Vercel) → use Render backend
+    return renderUrl;
   }
 
-  return envUrl;
+  // Fallback (e.g. during build) → Render URL
+  return renderUrl;
 }
 
 const API_BASE_URL = resolveApiBaseUrl();
