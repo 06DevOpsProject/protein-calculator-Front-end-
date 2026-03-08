@@ -5,6 +5,7 @@ function ProteinList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -29,9 +30,9 @@ function ProteinList() {
       })
       .catch((err) => {
         console.log("Error fetching users:", err);
-        setError(
-          "Unable to load users. Please check that the backend service is running and reachable."
-        );
+        const backendMessage =
+          err?.response?.data?.message || err?.message || "Unknown error";
+        setError(`Unable to load users: ${backendMessage}`);
         setLoading(false);
       });
   };
@@ -67,9 +68,11 @@ function ProteinList() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+    setError("");
+    setSuccessMessage("");
+
     if (!formData.name || !formData.age || !formData.weight || !formData.height || !formData.goal) {
-      alert("Please fill all fields");
+      setError("Please fill all fields");
       return;
     }
 
@@ -77,33 +80,29 @@ function ProteinList() {
       // Update user
       ProteinService.updatePartial(editingId, formData)
         .then(() => {
-          alert("User updated successfully");
+          setSuccessMessage("User updated successfully");
           setShowForm(false);
           fetchUsers();
         })
         .catch((err) => {
           console.log("Error updating user:", err);
-          setError(
-            err?.response?.data?.message ||
-              "Failed to update user. Please try again later."
-          );
-          alert("Failed to update user");
+          const backendMessage =
+            err?.response?.data?.message || err?.message || "Unknown error";
+          setError(`Failed to update user: ${backendMessage}`);
         });
     } else {
       // Create user
       ProteinService.create(formData)
         .then(() => {
-          alert("User added successfully");
+          setSuccessMessage("User added successfully");
           setShowForm(false);
           fetchUsers();
         })
         .catch((err) => {
           console.log("Error creating user:", err);
-          setError(
-            err?.response?.data?.message ||
-              "Failed to create user. Please check your input or try again later."
-          );
-          alert("Failed to create user");
+          const backendMessage =
+            err?.response?.data?.message || err?.message || "Unknown error";
+          setError(`Failed to create user: ${backendMessage}`);
         });
     }
   };
@@ -115,18 +114,18 @@ function ProteinList() {
 
   const deleteUser = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
+      setError("");
+      setSuccessMessage("");
       ProteinService.delete(id)
         .then(() => {
-          alert("User deleted successfully");
+          setSuccessMessage("User deleted successfully");
           fetchUsers();
         })
         .catch((err) => {
           console.log("Error deleting user:", err);
-          setError(
-            err?.response?.data?.message ||
-              "Failed to delete user. Please try again later."
-          );
-          alert("Failed to delete user");
+          const backendMessage =
+            err?.response?.data?.message || err?.message || "Unknown error";
+          setError(`Failed to delete user: ${backendMessage}`);
         });
     }
   };
@@ -134,6 +133,12 @@ function ProteinList() {
   return (
     <div className="container mt-5">
       <h2>Protein Calculator</h2>
+
+      {successMessage && (
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      )}
 
       {error && (
         <div className="alert alert-danger" role="alert">
