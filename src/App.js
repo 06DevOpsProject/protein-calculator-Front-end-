@@ -4,11 +4,7 @@ import "./App.css";
 function App() {
   return (
     <div className="App">
-      <nav className="navbar navbar-dark bg-dark mb-4">
-        <div className="container-fluid">
-          
-        </div>
-      </nav>
+      <h1 className="app-title">Protein Calculator</h1>
       <ProteinList />
     </div>
   );

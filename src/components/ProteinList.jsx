@@ -32,7 +32,9 @@ function ProteinList() {
         console.log("Error fetching users:", err);
         const backendMessage =
           err?.response?.data?.message || err?.message || "Unknown error";
-        setError(`Unable to load users: ${backendMessage}`);
+        const message = `Unable to load users: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
         setLoading(false);
       });
   };
@@ -72,7 +74,9 @@ function ProteinList() {
     setSuccessMessage("");
 
     if (!formData.name || !formData.age || !formData.weight || !formData.height || !formData.goal) {
-      setError("Please fill all fields");
+      const message = "Please fill all fields";
+      setError(message);
+      window.alert(message);
       return;
     }
 
@@ -88,7 +92,9 @@ function ProteinList() {
           console.log("Error updating user:", err);
           const backendMessage =
             err?.response?.data?.message || err?.message || "Unknown error";
-          setError(`Failed to update user: ${backendMessage}`);
+          const message = `Failed to update user: ${backendMessage}`;
+          setError(message);
+          window.alert(message);
         });
     } else {
       // Create user
@@ -102,7 +108,9 @@ function ProteinList() {
           console.log("Error creating user:", err);
           const backendMessage =
             err?.response?.data?.message || err?.message || "Unknown error";
-          setError(`Failed to create user: ${backendMessage}`);
+          const message = `Failed to create user: ${backendMessage}`;
+          setError(message);
+          window.alert(message);
         });
     }
   };
@@ -125,14 +133,16 @@ function ProteinList() {
           console.log("Error deleting user:", err);
           const backendMessage =
             err?.response?.data?.message || err?.message || "Unknown error";
-          setError(`Failed to delete user: ${backendMessage}`);
+          const message = `Failed to delete user: ${backendMessage}`;
+          setError(message);
+          window.alert(message);
         });
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Protein Calculator</h2>
+      <h2 className="text-center mb-4">Users & Protein Requirements</h2>
 
       {successMessage && (
         <div className="alert alert-success" role="alert">
@@ -153,7 +163,7 @@ function ProteinList() {
             <h5>{editingId ? "Edit User" : "Add New User"}</h5>
           </div>
           <div className="card-body">
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} className="form-centered">
               <div className="row">
                 <div className="col-md-6 mb-3">
                   <label className="form-label">Name</label>
