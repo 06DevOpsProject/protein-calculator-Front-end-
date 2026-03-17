@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Node
@@ -18,15 +18,21 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Dependencies
+      - name: Install
         run: npm install
 
-      - name: Build React App
+      - name: Build
         run: npm run build
 
-      - name: Deploy to Azure
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_6355DAC29B5D4FC49B550746D929B146 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EF21D112057D4F4A9E287C61FDB45F92 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F17F34BEF686424A82BEAA730069D71A }}
+
+      - name: Deploy
         uses: azure/webapps-deploy@v3
         with:
           app-name: protein-frontend-karthick
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
           package: .
