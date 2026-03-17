@@ -20,23 +20,22 @@ function ProteinList() {
     fetchUsers();
   }, []);
 
-  const fetchUsers = () => {
+  const fetchUsers = async () => {
     setLoading(true);
     setError("");
-    ProteinService.getAll()
-      .then((response) => {
-        setUsers(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log("Error fetching users:", err);
-        const backendMessage =
-          err?.response?.data?.message || err?.message || "Unknown error";
-        const message = `Unable to load users: ${backendMessage}`;
-        setError(message);
-        window.alert(message);
-        setLoading(false);
-      });
+    try {
+      const response = await ProteinService.getAll();
+      setUsers(response.data);
+    } catch (err) {
+      console.log("Error fetching users:", err);
+      const backendMessage =
+        err?.response?.data?.message || err?.message || "Unknown error";
+      const message = `Unable to load users: ${backendMessage}`;
+      setError(message);
+      window.alert(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -68,7 +67,7 @@ function ProteinList() {
     setShowForm(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccessMessage("");
@@ -82,36 +81,34 @@ function ProteinList() {
 
     if (editingId) {
       // Update user
-      ProteinService.updatePartial(editingId, formData)
-        .then(() => {
-          setSuccessMessage("User updated successfully");
-          setShowForm(false);
-          fetchUsers();
-        })
-        .catch((err) => {
-          console.log("Error updating user:", err);
-          const backendMessage =
-            err?.response?.data?.message || err?.message || "Unknown error";
-          const message = `Failed to update user: ${backendMessage}`;
-          setError(message);
-          window.alert(message);
-        });
+      try {
+        await ProteinService.updatePartial(editingId, formData);
+        setSuccessMessage("User updated successfully");
+        setShowForm(false);
+        fetchUsers();
+      } catch (err) {
+        console.log("Error updating user:", err);
+        const backendMessage =
+          err?.response?.data?.message || err?.message || "Unknown error";
+        const message = `Failed to update user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
+      }
     } else {
       // Create user
-      ProteinService.create(formData)
-        .then(() => {
-          setSuccessMessage("User added successfully");
-          setShowForm(false);
-          fetchUsers();
-        })
-        .catch((err) => {
-          console.log("Error creating user:", err);
-          const backendMessage =
-            err?.response?.data?.message || err?.message || "Unknown error";
-          const message = `Failed to create user: ${backendMessage}`;
-          setError(message);
-          window.alert(message);
-        });
+      try {
+        await ProteinService.create(formData);
+        setSuccessMessage("User added successfully");
+        setShowForm(false);
+        fetchUsers();
+      } catch (err) {
+        console.log("Error creating user:", err);
+        const backendMessage =
+          err?.response?.data?.message || err?.message || "Unknown error";
+        const message = `Failed to create user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
+      }
     }
   };
 
@@ -120,23 +117,22 @@ function ProteinList() {
     setEditingId(null);
   };
 
-  const deleteUser = (id) => {
+  const deleteUser = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       setError("");
       setSuccessMessage("");
-      ProteinService.delete(id)
-        .then(() => {
-          setSuccessMessage("User deleted successfully");
-          fetchUsers();
-        })
-        .catch((err) => {
-          console.log("Error deleting user:", err);
-          const backendMessage =
-            err?.response?.data?.message || err?.message || "Unknown error";
-          const message = `Failed to delete user: ${backendMessage}`;
-          setError(message);
-          window.alert(message);
-        });
+      try {
+        await ProteinService.delete(id);
+        setSuccessMessage("User deleted successfully");
+        fetchUsers();
+      } catch (err) {
+        console.log("Error deleting user:", err);
+        const backendMessage =
+          err?.response?.data?.message || err?.message || "Unknown error";
+        const message = `Failed to delete user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
+      }
     }
   };
 

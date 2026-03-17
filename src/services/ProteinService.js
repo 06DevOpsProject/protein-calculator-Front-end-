@@ -1,53 +1,64 @@
-import axios from "axios";
+import { apiRequest } from "./apiService";
 
-function resolveApiBaseUrl() {
-  const renderUrl = "https://protein-calculator-back-end.onrender.com";
-  const localUrl = "http://localhost:8080";
-  const envUrl = process.env.REACT_APP_API_BASE_URL;
+const BASE_PATH = "/api/protein";
 
-  // Highest priority: explicit env override
-  if (envUrl) {
-    return envUrl;
-  }
-
-  // If running in a browser, choose URL based on host
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    const isLocalHost =
-      host === "localhost" || host === "127.0.0.1" || host === "::1";
-
-    // Local React dev → talk to local Spring Boot on 8080
-    if (isLocalHost) {
-      return localUrl;
-    }
-
-    // Deployed frontend (e.g. Vercel) → use Render backend
-    return renderUrl;
-  }
-
-  // Fallback (e.g. during build) → Render URL
-  return renderUrl;
+function buildUserPayload(user) {
+  return {
+    name: user?.name,
+    age: Number(user?.age),
+    weight: Number(user?.weight),
+    height: Number(user?.height),
+    goal: user?.goal
+  };
 }
-
-const API_BASE_URL = resolveApiBaseUrl();
-const BASE_URL = `${API_BASE_URL}/api/protein`;
 
 class ProteinService {
 
-  getAll() {
-    return axios.get(BASE_URL);
+  async getAll() {
+    return apiRequest({
+      method: "get",
+      url: BASE_PATH
+    });
   }
 
-  create(user) {
-    return axios.post(BASE_URL, user);
+  async create(user) {
+    const payload = buildUserPayload(user);
+
+    return apiRequest({
+      method: "post",
+      url: BASE_PATH,
+      data: payload
+    });
   }
 
-  updatePartial(id, user) {
-    return axios.patch(`${BASE_URL}/${id}`, user);
+  async updatePartial(id, user) {
+    const payload = buildUserPayload(user);
+
+    try {
+      return await apiRequest({
+        method: "patch",
+        url: `${BASE_PATH}/${id}`,
+        data: payload
+      });
+    } catch (error) {
+      // Some deployments reject PATCH (403/405) but accept PUT.
+      if (error?.response?.status === 403 || error?.response?.status === 405) {
+        return apiRequest({
+          method: "put",
+          url: `${BASE_PATH}/${id}`,
+          data: payload
+        });
+      }
+
+      throw error;
+    }
   }
 
-  delete(id) {
-    return axios.delete(`${BASE_URL}/${id}`);
+  async delete(id) {
+    return apiRequest({
+      method: "delete",
+      url: `${BASE_PATH}/${id}`
+    });
   }
 }
 

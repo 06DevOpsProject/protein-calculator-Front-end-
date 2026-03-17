@@ -14,11 +14,17 @@ function AddProtein() {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const saveUser = (e) => {
+  const saveUser = async (e) => {
     e.preventDefault();
-    ProteinService.create(user).then(() => {
+    try {
+      await ProteinService.create(user);
       alert("User Added Successfully");
-    });
+    } catch (err) {
+      console.log("Error adding user:", err);
+      const backendMessage =
+        err?.response?.data?.message || err?.message || "Unknown error";
+      alert(`Failed to add user: ${backendMessage}`);
+    }
   };
 
   return (

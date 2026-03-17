@@ -9,13 +9,14 @@ function UpdateProtein({ selectedUser, refresh }) {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
-  const updateUser = () => {
-    ProteinService.updatePartial(user.id, user)
-      .then(() => {
-        alert("Updated successfully");
-        refresh();
-      })
-      .catch(err => console.log(err));
+  const updateUser = async () => {
+    try {
+      await ProteinService.updatePartial(user.id, user);
+      alert("Updated successfully");
+      refresh();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   if (!selectedUser) return null;
