@@ -296,5 +296,4 @@ function ProteinList() {
     </div>
   );
 }
-
 export default ProteinList;
