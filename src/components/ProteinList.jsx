@@ -80,26 +80,34 @@ function ProteinList() {
     }
 
     if (editingId) {
+      // Update user
       try {
         await ProteinService.updatePartial(editingId, formData);
         setSuccessMessage("User updated successfully");
         setShowForm(false);
         fetchUsers();
       } catch (err) {
+        console.log("Error updating user:", err);
         const backendMessage =
           err?.response?.data?.message || err?.message || "Unknown error";
-        window.alert(`Failed to update user: ${backendMessage}`);
+        const message = `Failed to update user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
       }
     } else {
+      // Create user
       try {
         await ProteinService.create(formData);
         setSuccessMessage("User added successfully");
         setShowForm(false);
         fetchUsers();
       } catch (err) {
+        console.log("Error creating user:", err);
         const backendMessage =
           err?.response?.data?.message || err?.message || "Unknown error";
-        window.alert(`Failed to create user: ${backendMessage}`);
+        const message = `Failed to create user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
       }
     }
   };
@@ -109,16 +117,7 @@ function ProteinList() {
     setEditingId(null);
   };
 
-  // ⭐⭐⭐⭐⭐ PASSWORD DELETE LOGIC ⭐⭐⭐⭐⭐
   const deleteUser = async (id) => {
-
-    const password = window.prompt("Enter Password to Delete");
-
-    if (password !== "2005") {
-      window.alert("❌ Wrong Password! Delete Cancelled");
-      return;
-    }
-
     if (window.confirm("Are you sure you want to delete this user?")) {
       setError("");
       setSuccessMessage("");
@@ -127,97 +126,172 @@ function ProteinList() {
         setSuccessMessage("User deleted successfully");
         fetchUsers();
       } catch (err) {
+        console.log("Error deleting user:", err);
         const backendMessage =
           err?.response?.data?.message || err?.message || "Unknown error";
-        window.alert(`Failed to delete user: ${backendMessage}`);
+        const message = `Failed to delete user: ${backendMessage}`;
+        setError(message);
+        window.alert(message);
       }
     }
   };
-  // ⭐⭐⭐⭐⭐ END ⭐⭐⭐⭐⭐
 
   return (
     <div className="container mt-5">
       <h2 className="text-center mb-4">Users & Protein Requirements</h2>
 
       {successMessage && (
-        <div className="alert alert-success">{successMessage}</div>
+        <div className="alert alert-success" role="alert">
+          {successMessage}
+        </div>
       )}
 
       {error && (
-        <div className="alert alert-danger">{error}</div>
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
       )}
 
+      {/* Add/Edit Form */}
       {showForm && (
         <div className="card mb-4">
           <div className="card-header bg-primary text-white">
             <h5>{editingId ? "Edit User" : "Add New User"}</h5>
           </div>
           <div className="card-body">
-            <form onSubmit={handleSubmit}>
-              <input className="form-control mb-2" name="name" placeholder="Name" value={formData.name} onChange={handleInputChange}/>
-              <input className="form-control mb-2" name="age" placeholder="Age" value={formData.age} onChange={handleInputChange}/>
-              <input className="form-control mb-2" name="weight" placeholder="Weight" value={formData.weight} onChange={handleInputChange}/>
-              <input className="form-control mb-2" name="height" placeholder="Height" value={formData.height} onChange={handleInputChange}/>
-              <select className="form-control mb-2" name="goal" value={formData.goal} onChange={handleInputChange}>
-                <option value="">Select Goal</option>
-                <option value="bulking">Bulking</option>
-                <option value="cutting">Cutting</option>
-                <option value="maintenance">Maintenance</option>
-              </select>
-
-              <button className="btn btn-success me-2">
-                {editingId ? "Update" : "Add"}
-              </button>
-
-              <button type="button" className="btn btn-secondary" onClick={handleCancel}>
-                Cancel
-              </button>
+            <form onSubmit={handleSubmit} className="form-centered">
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Name</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter name"
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Age</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="age"
+                    value={formData.age}
+                    onChange={handleInputChange}
+                    placeholder="Enter age"
+                  />
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Weight (kg)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="weight"
+                    value={formData.weight}
+                    onChange={handleInputChange}
+                    placeholder="Enter weight"
+                  />
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label className="form-label">Height (cm)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleInputChange}
+                    placeholder="Enter height"
+                  />
+                </div>
+              </div>
+              <div className="mb-3">
+                <label className="form-label">Goal</label>
+                <select
+                  className="form-control"
+                  name="goal"
+                  value={formData.goal}
+                  onChange={handleInputChange}
+                >
+                  <option value="">Select Goal</option>
+                  <option value="bulking">Bulking</option>
+                  <option value="cutting">Cutting</option>
+                  <option value="maintenance">Maintenance</option>
+                </select>
+              </div>
+              <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-success">
+                  {editingId ? "Update" : "Add"}
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={handleCancel}>
+                  Cancel
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
 
+      {/* Add Button */}
       {!showForm && (
         <button className="btn btn-primary mb-4" onClick={handleAddClick}>
           + Add New User
         </button>
       )}
 
+      {/* Users Table */}
       <h3>Users List</h3>
-
       {loading ? (
-        <p>Loading...</p>
+        <p>Loading users...</p>
+      ) : users.length === 0 ? (
+        <p className="text-muted">No users found. Click "Add New User" to create one.</p>
       ) : (
-        <table className="table table-bordered">
-          <thead className="table-dark">
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Protein</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.proteinRequired?.toFixed(2)}</td>
-                <td>
-                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEditClick(user)}>
-                    Edit
-                  </button>
-
-                  <button className="btn btn-danger btn-sm" onClick={() => deleteUser(user.id)}>
-                    Delete
-                  </button>
-                </td>
+        <div className="table-responsive">
+          <table className="table table-striped table-bordered table-hover">
+            <thead className="table-dark">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Weight (kg)</th>
+                <th>Height (cm)</th>
+                <th>Goal</th>
+                <th>Protein Required (g)</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-
-        </table>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.name}</td>
+                  <td>{user.age}</td>
+                  <td>{user.weight}</td>
+                  <td>{user.height}</td>
+                  <td>{user.goal}</td>
+                  <td><strong>{user.proteinRequired?.toFixed(2)}</strong></td>
+                  <td>
+                    <button
+                      className="btn btn-warning btn-sm me-2"
+                      onClick={() => handleEditClick(user)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => deleteUser(user.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
