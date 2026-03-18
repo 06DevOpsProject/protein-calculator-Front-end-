@@ -5,13 +5,13 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout
@@ -22,10 +22,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install
+      - name: Install Dependencies
         run: npm install
 
-      - name: Build
+      - name: Build React App
         run: npm run build
 
       - name: Azure Login
@@ -35,8 +35,8 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_EF21D112057D4F4A9E287C61FDB45F92 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_F17F34BEF686424A82BEAA730069D71A }}
 
-      - name: Deploy
+      - name: Deploy to Azure
         uses: azure/webapps-deploy@v3
         with:
           app-name: protein-frontend-karthick
-          package: .
+          package: build
