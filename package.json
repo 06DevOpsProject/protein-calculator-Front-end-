@@ -26,7 +26,6 @@
     "eject": "react-scripts eject"
   },
   "jest": {
-    "collectCoverage": true,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}",
       "!src/index.js",
@@ -38,7 +37,6 @@
       "text",
       "text-summary"
     ],
-    "coverageDirectory": "coverage",
     "coverageThreshold": {
       "global": {
         "branches": 80,
